@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DuckDB-Wasm (OPFS) + Parquet</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 1400px;
+    }
+    h1 {
+      margin: 0 0 10px;
+    }
+    .section {
+      padding: 0;
+      margin-bottom: 15px;
+      border: none;
+    }
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 1.1em;
+    }
+    .button-row {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #f2f2f2;
+      color: #333;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #sql-input {
+      width: 100%;
+      height: 120px;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 14px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    #sql-input:focus {
+      outline: none;
+      border-color: #666;
+    }
+    #status {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    #row-count {
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    #result {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    .result-table {
+      border-collapse: collapse;
+      border: 2px solid #ddd;
+      table-layout: auto;
+      width: auto;
+      font-size: 14px;
+    }
+    .result-table th,
+    .result-table td {
+      padding: 8px 12px;
+      text-align: left;
+      white-space: nowrap;
+      border: 1px solid #ddd;
+    }
+    .result-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      border-bottom: 2px solid #ddd;
+    }
+    .result-table tr:hover {
+      background-color: #f5f5f5;
+    }
+    .result-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .result-table .null {
+      color: #999;
+      font-style: italic;
+    }
+    .error {
+      color: #cc3333;
+      padding: 15px;
+      background: #fff0f0;
+      border-radius: 4px;
+    }
+    .notice {
+      color: #666;
+      font-style: italic;
+      margin-top: 10px;
+    }
+    .loading {
+      opacity: 0.5;
+    }
+    .license-notice {
+      font-size: 12px;
+      color: #666;
+      margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>DuckDB-Wasm (OPFS) + Parquet + S3-compatible object storage with MoonBit</h1>
+    <h2>GitHub: <a href="https://github.com/f4ah6o/duckdb_wasm_parquet.mbt">https://github.com/f4ah6o/duckdb_wasm_parquet.mbt</a></h2>
+
+    <div class="section">
+      <h2>Status</h2>
+      <div id="status">Loading...</div>
+      <div id="row-count"></div>
+    </div>
+
+    <div class="section">
+      <h2>Data Management</h2>
+      <div class="button-row">
+        <button id="btn-fetch" class="btn-primary" onclick="window.app.fetch_parquet()" disabled>
+          Fetch Parquet
+        </button>
+        <button id="btn-purge" class="btn-danger" onclick="window.app.purge_cache()">
+          Purge Cache
+        </button>
+      </div>
+      <p style="font-size: 12px; color: #666;">
+        Data source: <code>P78BHZM3MD3MV47JDZG47PB8PW.parquet</code>
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>SQL Query</h2>
+      <textarea id="sql-input" placeholder="Enter your SQL query here...">SELECT * FROM stats LIMIT 10</textarea>
+      <div class="button-row" style="margin-top: 15px;">
+        <button id="btn-execute" class="btn-primary" onclick="window.app.run_sql_query()" disabled>
+          Execute Query
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Preset Queries</h2>
+      <div class="button-row">
+        <button class="btn-preset" onclick="window.app.run_preset_query('first_100')">
+          First 100 Rows
+        </button>
+        <button class="btn-preset" onclick="window.app.run_preset_query('sample')">
+          Sample 1%
+        </button>
+        <button class="btn-preset" onclick="window.app.run_preset_query('count_by_hour')">
+          Count by Hour
+        </button>
+        <button class="btn-preset" onclick="window.app.run_preset_query('describe')">
+          Describe Table
+        </button>
+        <button class="btn-preset" onclick="window.app.run_preset_query('schema')">
+          Schema Info
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Results</h2>
+      <div id="result">
+        <p style="color: #666;">Query results will appear here.</p>
+      </div>
+    </div>
+
+    <div class="license-notice">
+      <strong>License:</strong><br>
+      Code: Apache-2.0<br>
+      Parquet Data: CC BY-NC-ND 4.0
+    </div>
+  </div>
+
+  <!-- Load MoonBit compiled JS -->
+  <script type="module">
+    // Import the MoonBit compiled module
+    import * as app from './target/js/release/build/cmd/main/main.js';
+
+    // Expose functions globally for button onclick handlers
+    window.app = {
+      fetch_parquet: app.fetch_parquet || app['@app.fetch_parquet'] || (() => console.error('fetch_parquet not found')),
+      run_sql_query: app.run_sql_query || app['@app.run_sql_query'] || (() => console.error('run_sql_query not found')),
+      run_preset_query: app.run_preset_query || app['@app.run_preset_query'] || (() => console.error('run_preset_query not found')),
+      purge_cache: app.purge_cache || app['@app.purge_cache'] || (() => console.error('purge_cache not found')),
+      get_row_count: app.get_row_count || app['@app.get_row_count'] || (() => console.error('get_row_count not found')),
+      app_init: app.app_init || app['@app.app_init'] || (() => console.error('app_init not found')),
+    };
+
+    // Initialize the application when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        window.app.app_init();
+      });
+    } else {
+      window.app.app_init();
+    }
+  </script>
+</body>
+</html>
