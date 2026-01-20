@@ -3,6 +3,7 @@ import path from 'node:path';
 import moonbit from "vite-plugin-moonbit";
 
 export default defineConfig({
+  base: './',
   plugins: [moonbit({
     target: "js",
     mode: "release",
