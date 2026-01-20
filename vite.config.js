@@ -1,7 +1,14 @@
 import { defineConfig } from 'vite';
 import path from 'node:path';
+import moonbit from "vite-plugin-moonbit";
 
 export default defineConfig({
+  plugins: [moonbit({
+    target: "js",
+    mode: "release",
+    watch: true,
+    showLogs: true
+  })],
   resolve: {
     alias: {
       // Browser builds should never use the Node backend; stub it to avoid resolution errors.
