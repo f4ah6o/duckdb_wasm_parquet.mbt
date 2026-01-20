@@ -1,0 +1,42 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "f4ah6o/duckdb_wasm_parquet/src/app"
+
+import(
+  "f4ah6o/duckdb"
+)
+
+// Values
+pub fn app_init() -> Unit
+
+pub fn check_opfs_support(on_done~ : (Result[Bool, String]) -> Unit) -> Unit
+
+pub fn delete_opfs_file(String, on_done~ : (Result[Unit, String]) -> Unit) -> Unit
+
+pub fn fetch_parquet() -> Unit
+
+pub fn get_row_count() -> Unit
+
+pub fn get_sample_queries() -> Array[(String, String)]
+
+pub fn list_opfs_files(on_done~ : (Result[Array[String], String]) -> Unit) -> Unit
+
+pub fn open_opfs_database(String, on_done~ : (Result[@duckdb.Connection, String]) -> Unit) -> Unit
+
+pub fn perform_search(String) -> Unit
+
+pub fn purge_cache() -> Unit
+
+pub fn register_remote_file(@duckdb.Connection, String, String, on_done~ : (Result[Unit, String]) -> Unit) -> Unit
+
+pub fn run_preset_query(String) -> Unit
+
+pub fn run_sql_query() -> Unit
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

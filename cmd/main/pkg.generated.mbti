@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "f4ah6o/duckdb_wasm_parquet/cmd/main"
+
+// Values
+pub fn app_init() -> Unit
+
+pub fn fetch_parquet() -> Unit
+
+pub fn get_row_count() -> Unit
+
+pub fn perform_search(String) -> Unit
+
+pub fn purge_cache() -> Unit
+
+pub fn run_preset_query(String) -> Unit
+
+pub fn run_sql_query() -> Unit
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

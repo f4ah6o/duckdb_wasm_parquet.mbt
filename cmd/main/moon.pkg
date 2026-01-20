@@ -1,0 +1,18 @@
+import { "f4ah6o/duckdb_wasm_parquet/src/app" as @app }
+
+options(
+  "is-main": true,
+  link: {
+    "js": {
+      "exports": [
+        "app_init",
+        "run_sql_query",
+        "fetch_parquet",
+        "purge_cache",
+        "get_row_count",
+        "run_preset_query",
+      ],
+    },
+  },
+  targets: { "main.mbt": [ "js" ] },
+)
