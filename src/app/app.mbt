@@ -53,7 +53,7 @@ extern "js" fn log_error(msg : String) -> Unit =
 ///|
 /// The default Parquet URL
 extern "js" fn js_parquet_url() -> String =
-  #|() => "https://duckdb-wasm-mbt.f12o.com/P78BHZM3MD3MV47JDZG47PB8PW.parquet"
+  #|() => window.__parquet_url || ""
 
 ///|
 /// The table name used for the loaded parquet data
@@ -260,6 +260,13 @@ pub fn fetch_parquet() -> Unit {
 
   // Register the remote parquet file
   let url = js_parquet_url()
+  if url == "" {
+    let msg = "Error: Parquet URL not set (VITE_PARQUET_URL)"
+    log_error(msg)
+    update_status(msg)
+    js_set_button_disabled("#btn-fetch", false)
+    return
+  }
   register_remote_file(c, "stats.parquet", url, on_done=fn(result) {
     match result {
       Ok(_) => {
@@ -303,6 +310,13 @@ fn create_table_from_parquet(conn : @duckdb.Connection) -> Unit {
 /// Create table directly from URL (fallback)
 fn create_table_from_url(conn : @duckdb.Connection) -> Unit {
   let url = js_parquet_url()
+  if url == "" {
+    let msg = "Error: Parquet URL not set (VITE_PARQUET_URL)"
+    log_error(msg)
+    update_status(msg)
+    js_set_button_disabled("#btn-fetch", false)
+    return
+  }
   let sql = "CREATE OR REPLACE TABLE " +
     table_name +
     " AS SELECT * FROM read_parquet('" +

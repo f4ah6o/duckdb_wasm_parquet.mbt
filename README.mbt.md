@@ -21,3 +21,7 @@ MoonBit移植版のライセンスもApache-2.0ライセンスです。
   - 改変: なし
   - ライセンスに基づきCloudflare R2に保存しています。
 - see [Parquetファイルについて](https://github.com/voluntas/duckdb-wasm-parquet/tree/main#parquet-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6).
+
+## 環境変数
+
+- `VITE_PARQUET_URL`: 読み込む Parquet ファイルの URL

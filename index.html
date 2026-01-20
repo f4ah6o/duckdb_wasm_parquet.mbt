@@ -183,7 +183,7 @@
         </button>
       </div>
       <p style="font-size: 12px; color: #666;">
-        Data source: <code>P78BHZM3MD3MV47JDZG47PB8PW.parquet</code>
+        Data source: <code id="parquet-source">VITE_PARQUET_URL not set</code>
       </p>
     </div>
 
@@ -268,7 +268,7 @@ ORDER BY time_bucket ASC;</textarea>
       <strong>License:</strong><br>
       Code: Apache-2.0<br>
       Parquet Data:
-      <a href="https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JDZG47PB8PW.parquet">P78BHZM3MD3MV47JDZG47PB8PW.parquet</a>
+      <a id="parquet-data-link">VITE_PARQUET_URL not set</a>
       by <a href="https://github.com/voluntas">@voluntas</a><br>
       License:
       <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
@@ -280,6 +280,24 @@ ORDER BY time_bucket ASC;</textarea>
   <script type="module">
     // Import the MoonBit compiled module
     import * as app from './target/js/release/build/cmd/main/main.js';
+
+    const parquetUrl = import.meta.env.VITE_PARQUET_URL || '';
+    window.__parquet_url = parquetUrl;
+    const parquetFile =
+      parquetUrl && parquetUrl.includes('/') ? parquetUrl.split('/').pop() : parquetUrl;
+    const parquetSource = document.getElementById('parquet-source');
+    if (parquetSource) {
+      parquetSource.textContent = parquetFile || 'VITE_PARQUET_URL not set';
+    }
+    const parquetDataLink = document.getElementById('parquet-data-link');
+    if (parquetDataLink) {
+      if (parquetUrl) {
+        parquetDataLink.href = parquetUrl;
+        parquetDataLink.textContent = parquetFile || parquetUrl;
+      } else {
+        parquetDataLink.removeAttribute('href');
+      }
+    }
 
     // Expose functions globally for button onclick handlers
     window.app = {
