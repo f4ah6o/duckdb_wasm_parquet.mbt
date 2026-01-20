@@ -1,0 +1,25 @@
+{
+  "name": "duckdb-wasm-parquet",
+  "version": "0.1.0",
+  "description": "DuckDB-WASM Parquet Viewer with MoonBit",
+  "type": "module",
+  "homepage": "https://f4ah6o.github.io/duckdb_wasm_parquet.mbt/",
+  "scripts": {
+    "dev": "vite",
+    "build": "pnpm moon:build && vite build",
+    "preview": "vite preview",
+    "moon:build": "moon clean && moon check && moon build",
+    "moon:watch": "moon build --watch",
+    "start": "pnpm moon:build && pnpm dev",
+    "deploy:ghpages": "pnpm build && pnpm gh-pages -d dist -m \"deploy page\""
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^7.3.1",
+    "vite-plugin-moonbit": "^0.1.3"
+  },
+  "dependencies": {
+    "@duckdb/duckdb-wasm": "1.32.0"
+  },
+  "license": "Apache-2.0"
+}
