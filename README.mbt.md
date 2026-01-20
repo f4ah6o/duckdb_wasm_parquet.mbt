@@ -1,14 +1,19 @@
-# f4ah6o/duckdb_wasm_parquet
+# DuckDB-Wasm (OPFS) + Parquet + S3-compatible object storage with MoonBit
 
-DuckDB-WASM + Parquet viewer written in MoonBit.
+## 概要
 
-## Attribution
+- [@voluntas](https://github.com/voluntas)さんによる[DuckDB-Wasm (OPFS) + Parquet + S3-compatible object storage](https://github.com/voluntas/duckdb-wasm-parquet)のMoonBit移植版です。
+  - アップストリームのソースコードはApache-2.0ライセンスであり、著作権は @voluntasさんに帰属します。
 
-- This project is a MoonBit port of https://github.com/voluntas/duckdb-wasm-parquet.
-  The upstream source code is licensed under Apache-2.0 and © @voluntasさん.
+MoonBit移植版のライセンスもApache-2.0ライセンスです。
 
-## Data License
+### アプリについて
 
-- The Parquet file used for the demo (e.g. `P78BHZM3MD3MV47JDZG47PB8PW.parquet`) is
-  published under CC BY-NC-ND 4.0. Please follow the original data license when
-  reusing or redistributing the dataset.
+- > DuckDB-Wasm をブラウザで使用して、 OPFS に DuckDB データベースファイルを作成し、 S3 互換オブジェクトストレージにある Parquet ファイルを読み込んで DuckDB-Wasm に登録し、 DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
+- see [original README](https://github.com/voluntas/duckdb-wasm-parquet/tree/main?tab=readme-ov-file#%E6%A6%82%E8%A6%81)
+
+## Parquetファイルのライセンス
+
+- 利用したParquetファイルのライセンス[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)です。
+  - ライセンスに基づきCloudflare R2に保存しています。
+- see [Parquetファイルについて](https://github.com/voluntas/duckdb-wasm-parquet/tree/main#parquet-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6).
