@@ -11,6 +11,7 @@ options(
         "purge_cache",
         "get_row_count",
         "run_preset_query",
+        "perform_search",
       ],
     },
   },

@@ -55,3 +55,8 @@ pub fn get_row_count() -> Unit {
 pub fn run_preset_query(preset : String) -> Unit {
   @app.run_preset_query(preset)
 }
+
+///|
+pub fn perform_search(search_term : String) -> Unit {
+  @app.perform_search(search_term)
+}
