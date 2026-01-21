@@ -1,4 +1,4 @@
-# DuckDB-Wasm (OPFS) + Parquet + S3-compatible object storage with MoonBit
+# DuckDB-Wasm (OPFS) + Parquet with MoonBit
 
 ## 概要
 
@@ -24,4 +24,28 @@ MoonBit移植版のライセンスもApache-2.0ライセンスです。
 
 ## 環境変数
 
-- `VITE_PARQUET_URL`: 読み込む Parquet ファイルの URL
+- `VITE_PARQUET_URL`: 読み込む Parquet ファイルの URL（未設定時は公開URL）
+- `PARQUET_URL`: Node サーバーが `read_parquet()` で読む URL（未設定時は公開URL）
+- `PORT`: Node サーバーのポート（未設定時は `8788`）
+  - 公開URL: <https://duckdb-wasm-mbt.f12o.com/P78BHZM3MD3MV47JDZG47PB8PW.parquet>
+
+## ターゲット構成
+
+1. **SPA (DuckDB-WASM)**: `index.html` + `cmd/main`
+2. **Node サーバー (native DuckDB)**: `cmd/server` + duckdb node API
+
+## ローカル実行
+
+### SPA
+
+```
+pnpm dev
+```
+
+### Node サーバー
+
+```
+pnpm add @duckdb/node-api
+moon build --target js
+node target/js/release/build/cmd/server/main.js
+```
