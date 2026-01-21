@@ -12,6 +12,12 @@ MoonBit移植版のライセンスもApache-2.0ライセンスです。
 - > DuckDB-Wasm をブラウザで使用して、 OPFS に DuckDB データベースファイルを作成し、 S3 互換オブジェクトストレージにある Parquet ファイルを読み込んで DuckDB-Wasm に登録し、 DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
 - see [original README](https://github.com/voluntas/duckdb-wasm-parquet/tree/main?tab=readme-ov-file#%E6%A6%82%E8%A6%81)
 
+### このリポジトリのアプリについて
+
+アプリの実行形式は以下の通りです。オリジナルの趣旨とは外れますが[MoonBit DuckDB Client API](https://github.com/f4ah6o/duckdb.mbt)の動作確認を兼ねています。
+1. オリジナルの通りDuckDB-Wasmを使用したブラウザ側動作
+2. DuckDB node-apiを使用したサーバー側動作
+
 ## Parquetファイルのライセンス
 
 - 利用したParquetファイル: `P78BHZM3MD3MV47JDZG47PB8PW.parquet`
