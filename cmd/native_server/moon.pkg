@@ -1,0 +1,21 @@
+import {
+  "moonbitlang/async" as @async,
+  "moonbitlang/async/http" as @http,
+  "moonbitlang/async/io" as @io,
+  "moonbitlang/async/socket" as @socket,
+  "moonbitlang/core/strconv",
+  "moonbitlang/x/sys" as @sys,
+  "f4ah6o/duckdb",
+  "f4ah6o/duckdb_wasm_parquet/src/core" as @app_core,
+}
+
+options(
+  "is-main": true,
+  link: {
+    "native": {
+      "cc-link-flags": "-L/usr/local/lib -Wl,-rpath,/usr/local/lib -L/opt/homebrew/lib -Wl,-rpath,/opt/homebrew/lib -lduckdb",
+      "stub-cc-flags": "-I/usr/local/include -I/opt/homebrew/include",
+    },
+  },
+  targets: { "main.mbt": ["native"] },
+)

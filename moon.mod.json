@@ -5,7 +5,9 @@
     "f4ah6o/duckdb": "0.5.0",
     "mizchi/luna": "0.7.3",
     "f4ah6o/htmx": "0.2.0",
-    "mizchi/js": "0.10.10"
+    "mizchi/js": "0.10.10",
+    "moonbitlang/async": "0.16.0",
+    "moonbitlang/x": "0.4.38"
   },
   "readme": "README.mbt.md",
   "repository": "https://github.com/f4ah6o/duckdb_wasm_parquet.mbt",

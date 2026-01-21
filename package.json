@@ -11,6 +11,7 @@
     "moon:watch": "moon build --watch",
     "start:spa": "pnpm moon:build && pnpm dev",
     "start:node": "pnpm moon:build && pnpm dev:node",
+    "start:native": "moon run cmd/native_server --target native",
     "dev:node": "node ./_build/js/release/build/cmd/server/server.js",
     "deploy:ghpages": "pnpm build && pnpm gh-pages -d dist -m \"deploy page\""
   },
