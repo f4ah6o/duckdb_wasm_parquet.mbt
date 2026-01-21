@@ -57,7 +57,7 @@ extern "js" fn js_parquet_url() -> String =
 
 ///|
 /// The table name used for the loaded parquet data
-let table_name : String = "stats"
+let table_name : String = @app_core.table_name
 
 ///|
 /// Update UI element inner HTML
@@ -108,6 +108,7 @@ fn error_message(err : @duckdb.DuckDBError) -> String {
 /// Initialize the application
 /// This is the main entry point called from JavaScript
 pub fn app_init() -> Unit {
+  @htmx.htmx_init()
   log_info("Initializing application...")
   update_status("Initializing DuckDB...")
 
@@ -351,7 +352,7 @@ pub fn get_row_count() -> Unit {
   }
   let conn = js_get_connection()
   guard conn is Some(c) else { return }
-  let sql = "SELECT COUNT(*) as cnt FROM " + table_name
+  let sql = @app_core.count_sql()
   c.query(sql, on_done=fn(result) {
     match result {
       Ok(res) =>
@@ -362,20 +363,6 @@ pub fn get_row_count() -> Unit {
       Err(_) => update_row_count("Error counting rows")
     }
   })
-}
-
-///|
-/// Escape SQL string to prevent injection
-fn escape_sql_string(s : String) -> String {
-  let buf = StringBuilder::new()
-  for c in s {
-    if c == '\'' {
-      buf.write_string("''")
-    } else {
-      buf.write_char(c)
-    }
-  }
-  buf.to_string()
 }
 
 ///|
@@ -390,18 +377,7 @@ pub fn perform_search(search_term : String) -> Unit {
   guard js_is_parquet_loaded() else { return }
   let conn = js_get_connection()
   guard conn is Some(c) else { return }
-  let escaped_term = escape_sql_string(search_term)
-  let sql = "SELECT timestamp, connection_id, rtc_type FROM " +
-    table_name +
-    " WHERE connection_id LIKE '%" +
-    escaped_term +
-    "%' OR channel_id LIKE '%" +
-    escaped_term +
-    "%' OR timestamp LIKE '%" +
-    escaped_term +
-    "%' OR rtc_type LIKE '%" +
-    escaped_term +
-    "%' USING SAMPLE 1 PERCENT (bernoulli)"
+  let sql = @app_core.search_sql(search_term)
   log_info("Search: " + search_term)
   c.query(sql, on_done=fn(result) {
     match result {
@@ -458,7 +434,7 @@ pub fn run_sql_query() -> Unit {
         let msg = error_message(err)
         log_error("Query failed: " + msg)
         update_status("Error: " + msg)
-        update_result("<div class=\"error\">Error: (check console)</div>")
+        update_result(@app_core.render_error("Error: (check console)"))
       }
     }
   })
@@ -480,18 +456,7 @@ pub fn run_preset_query(preset : String) -> Unit {
     update_status("Error: No connection")
     return
   }
-  let sql = match preset {
-    "samples" =>
-      "SELECT timestamp, connection_id, rtc_type FROM " +
-      table_name +
-      " USING SAMPLE 1 PERCENT (bernoulli)"
-    "aggregation" =>
-      "SELECT time_bucket, channel_id, session_id, connection_id, bytes_sent_diff, bytes_received_diff, packets_sent_diff, packets_received_diff FROM ( SELECT time_bucket, channel_id, session_id, connection_id, bytes_sent - LAG(bytes_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_sent_diff, bytes_received - LAG(bytes_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_received_diff, packets_sent - LAG(packets_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_sent_diff, packets_received - LAG(packets_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_received_diff FROM ( SELECT strftime(time_bucket('15 seconds', strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')), '%Y-%m-%d %H:%M:%S') AS time_bucket, channel_id, session_id, connection_id, MAX(CAST(rtc_data->'$.bytesSent' AS BIGINT)) AS bytes_sent, MAX(CAST(rtc_data->'$.bytesReceived' AS BIGINT)) AS bytes_received, MAX(CAST(rtc_data->'$.packetsSent' AS BIGINT)) AS packets_sent, MAX(CAST(rtc_data->'$.packetsReceived' AS BIGINT)) AS packets_received FROM " +
-      table_name +
-      " WHERE rtc_type = 'transport' GROUP BY time_bucket, channel_id, session_id, connection_id ) ) WHERE bytes_sent_diff IS NOT NULL AND bytes_received_diff IS NOT NULL AND packets_sent_diff IS NOT NULL AND packets_received_diff IS NOT NULL ORDER BY time_bucket ASC"
-    "describe" => "DESCRIBE " + table_name
-    _ => "SELECT * FROM " + table_name + " LIMIT 10"
-  }
+  let sql = @app_core.preset_sql(preset)
   log_info("Preset query: " + preset)
   update_status("Running preset: " + preset)
   c.query(sql, on_done=fn(result) {
@@ -507,7 +472,7 @@ pub fn run_preset_query(preset : String) -> Unit {
         let msg = error_message(err)
         log_error("Preset query failed: " + msg)
         update_status("Error: " + msg)
-        update_result("<div class=\"error\">Error: (check console)</div>")
+        update_result(@app_core.render_error("Error: (check console)"))
       }
     }
   })
@@ -563,67 +528,5 @@ fn delete_opfs_files() -> Unit {
 ///|
 /// Render query result as HTML table
 fn render_result_table(result : @duckdb.QueryResult) -> Unit {
-  let buf = StringBuilder::new()
-
-  // Limit rows for display
-  let max_rows = 1000
-  let row_count = result.row_count()
-  let display_rows = if row_count > max_rows { max_rows } else { row_count }
-
-  // Build table header
-  buf.write_string("<table class=\"result-table\"><thead><tr>")
-  for i = 0; i < result.columns.length(); i = i + 1 {
-    buf.write_string("<th>")
-    buf.write_string(escape_html(result.columns[i]))
-    buf.write_string("</th>")
-  }
-  buf.write_string("</tr></thead><tbody>")
-
-  // Build table body
-  for row = 0; row < display_rows; row = row + 1 {
-    buf.write_string("<tr>")
-    for col = 0; col < result.columns.length(); col = col + 1 {
-      buf.write_string("<td>")
-      if result.nulls[row][col] {
-        buf.write_string("<span class=\"null\">NULL</span>")
-      } else {
-        buf.write_string(escape_html(result.rows[row][col]))
-      }
-      buf.write_string("</td>")
-    }
-    buf.write_string("</tr>")
-  }
-  buf.write_string("</tbody></table>")
-
-  // Add truncation notice if needed
-  if row_count > max_rows {
-    buf.write_string(
-      "<p class=\"notice\">Showing " +
-      max_rows.to_string() +
-      " of " +
-      row_count.to_string() +
-      " rows</p>",
-    )
-  }
-  update_result(buf.to_string())
-}
-
-///|
-/// Escape HTML special characters
-fn escape_html(s : String) -> String {
-  let buf = StringBuilder::new()
-  for c in s {
-    if c == '<' {
-      buf.write_string("&lt;")
-    } else if c == '>' {
-      buf.write_string("&gt;")
-    } else if c == '&' {
-      buf.write_string("&amp;")
-    } else if c == '"' {
-      buf.write_string("&quot;")
-    } else {
-      buf.write_char(c)
-    }
-  }
-  buf.to_string()
+  update_result(@app_core.render_result_table(result))
 }

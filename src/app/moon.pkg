@@ -1,1 +1,5 @@
-import { "f4ah6o/duckdb" }
+import {
+  "f4ah6o/duckdb",
+  "f4ah6o/duckdb_wasm_parquet/src/core" as @app_core,
+  "f4ah6o/htmx/src/htmx" as @htmx,
+}
