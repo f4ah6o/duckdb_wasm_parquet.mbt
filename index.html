@@ -279,9 +279,11 @@ ORDER BY time_bucket ASC;</textarea>
   <!-- Load MoonBit compiled JS -->
   <script type="module">
     // Import the MoonBit compiled module
-    import * as app from './target/js/release/build/cmd/main/main.js';
+    import * as app from './_build/js/release/build/cmd/main/main.js';
 
-    const parquetUrl = import.meta.env.VITE_PARQUET_URL || '';
+    const parquetUrl =
+      import.meta.env.VITE_PARQUET_URL ||
+      'https://duckdb-wasm-mbt.f12o.com/P78BHZM3MD3MV47JDZG47PB8PW.parquet';
     window.__parquet_url = parquetUrl;
     const parquetFile =
       parquetUrl && parquetUrl.includes('/') ? parquetUrl.split('/').pop() : parquetUrl;

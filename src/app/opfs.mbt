@@ -50,26 +50,19 @@ extern "js" fn js_open_opfs_db(
   #|      throw new Error("duckdb-wasm requires Worker support");
   #|    }
   #|    const duckdb = await import("@duckdb/duckdb-wasm");
-  #|    const { default: duckdb_mvp } = await import(
-  #|      "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url"
-  #|    );
-  #|    const { default: duckdb_mvp_worker } = await import(
-  #|      "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url"
-  #|    );
-  #|    const { default: duckdb_eh } = await import(
-  #|      "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url"
-  #|    );
-  #|    const { default: duckdb_eh_worker } = await import(
-  #|      "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url"
-  #|    );
+  #|    const version = duckdb.PACKAGE_VERSION || "1.32.0";
+  #|    const base = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${version}/dist/`;
+  #|    const duckdb_mvp = `${base}duckdb-mvp.wasm`;
+  #|    const duckdb_mvp_worker = `${base}duckdb-browser-mvp.worker.js`;
+  #|    const wrapWorker = (innerUrl) => {
+  #|      const source = `var _setThrew = function() {};\nimportScripts(${JSON.stringify(innerUrl)});`;
+  #|      return URL.createObjectURL(new Blob([source], { type: "text/javascript" }));
+  #|    };
+  #|    const workerUrl = wrapWorker(duckdb_mvp_worker);
   #|    const MANUAL_BUNDLES = {
   #|      mvp: {
   #|        mainModule: duckdb_mvp,
-  #|        mainWorker: duckdb_mvp_worker,
-  #|      },
-  #|      eh: {
-  #|        mainModule: duckdb_eh,
-  #|        mainWorker: duckdb_eh_worker,
+  #|        mainWorker: workerUrl,
   #|      },
   #|    };
   #|    const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
@@ -78,6 +71,7 @@ extern "js" fn js_open_opfs_db(
   #|      throw new Error("duckdb-wasm bundle missing mainWorker");
   #|    }
   #|    const worker = new Worker(bundle.mainWorker);
+  #|    URL.revokeObjectURL(workerUrl);
   #|    const db = new duckdb.AsyncDuckDB(logger, worker);
   #|    await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
   #|    const setStorageMode = (mode) => {
