@@ -17,5 +17,5 @@ options(
       "stub-cc-flags": "-I/usr/local/include -I/opt/homebrew/include",
     },
   },
-  targets: { "main.mbt": ["native"] },
+  targets: { "main.mbt": [ "native" ], "main_js.mbt": [ "js" ] },
 )
