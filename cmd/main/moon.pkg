@@ -1,4 +1,6 @@
-import { "f4ah6o/duckdb_wasm_parquet/src/app" as @app }
+import {
+  "f4ah6o/duckdb_wasm_parquet/src/app" as @app,
+}
 
 options(
   "is-main": true,

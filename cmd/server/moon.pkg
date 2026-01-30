@@ -10,10 +10,6 @@ import {
 
 options(
   "is-main": true,
-  link: {
-    "js": {
-      "exports": ["main"],
-    },
-  },
-  targets: { "main.mbt": ["js"] },
+  link: { "js": { "exports": [ "main" ] } },
+  targets: { "main.mbt": [ "js" ] },
 )

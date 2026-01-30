@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "deps": {
     "f4ah6o/duckdb": "0.5.0",
-    "mizchi/luna": "0.7.3",
+    "mizchi/luna": "0.9.0",
     "f4ah6o/htmx": "0.2.0",
-    "mizchi/js": "0.10.10",
-    "moonbitlang/async": "0.16.0",
+    "mizchi/js": "0.10.11",
+    "moonbitlang/async": "0.16.4",
     "moonbitlang/x": "0.4.38"
   },
   "readme": "README.mbt.md",

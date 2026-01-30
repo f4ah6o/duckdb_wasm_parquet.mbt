@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "f4ah6o/duckdb_wasm_parquet/src/app"
 
-import(
-  "f4ah6o/duckdb"
-)
+import {
+  "f4ah6o/duckdb",
+}
 
 // Values
 pub fn app_init() -> Unit
