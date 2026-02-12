@@ -314,7 +314,7 @@ fn url_decode(s : String) -> String {
       out.push(b)
       continue i + 1
     }
-  } else {
+  } nobreak {
     ()
   }
   @encoding/utf8.decode_lossy(Bytes::from_array(out))
@@ -349,7 +349,7 @@ fn parse_query(query : String) -> Map[String, String] {
           params[key] = ""
         }
       }
-    } else {
+    } nobreak {
       ()
     }
   }

@@ -1,11 +1,11 @@
 import {
   "mizchi/js",
   "mizchi/js/core",
-  "mizchi/js/node/http" as @node_http,
+  "mizchi/js/node/http" @node_http,
   "mizchi/js/web/url",
   "moonbitlang/core/strconv",
   "f4ah6o/duckdb",
-  "f4ah6o/duckdb_wasm_parquet/src/core" as @app_core,
+  "f4ah6o/duckdb_wasm_parquet/src/core" @app_core,
 }
 
 options(
